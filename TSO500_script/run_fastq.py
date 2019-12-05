@@ -8,21 +8,23 @@ import core
 import argparse
 import configparser
 import subprocess
-import re
-
+from multiprocessing import Process
 class Myconf(configparser.ConfigParser):
     def __init__(self, defaults=None):
         configparser.ConfigParser.__init__(self, defaults=defaults)
     def optionxform(self, optionstr):
         return optionstr
 
+def shell_run(x):
+    subprocess.check_call(x, shell=True)
 
 def run_docker(pe1,pe2,outdir,prefix,indexID,configfile):
     ###########################################
     config = Myconf()
     config.read(configfile)
-    TSO500 = config.read('software', 'TSO500')
-    infile=open("%s/resources/sampleSheet/TSO500_NovaSeq_Sample_Sheet_Template.csv","r")
+    TSO500 = config.get('software', 'TSO500')
+    fastp=config.get('software','fastp0.20.0')
+    infile=open("%s/resources/sampleSheet/TSO500_NovaSeq_Sample_Sheet_Template.csv"%(os.path.dirname(TSO500)),"r")
     index, index2="",""
     for line in infile:
         line=line.strip()
@@ -34,20 +36,20 @@ def run_docker(pe1,pe2,outdir,prefix,indexID,configfile):
     ##########step1:print samplesheet############
     outfile=open("%s/SampleSheet.csv"%(outdir),"w")
     outfile.write("""
-    [Header],,,,,,,
+[Header],,,,,,,
 IEMFileVersion,4,,,,,,
 Investigator Name,User Name,,,,,,
 Experiment Name,Experiment,,,,,,
 Date,2019/12/1,,,,,,
-Workflow,GenerateFASTQ,,,,,,
+Workflow,From GenerateFASTQ,,,,,,
 Application,NovaSeq,,,,,,
 Assay,,,,,,,
 Description,,,,,,,
 Chemistry,Default,,,,,,
 ,,,,,,,
 [Reads],,,,,,,
-101,,,,,,,
-101,,,,,,,
+151,,,,,,,
+151,,,,,,,
 ,,,,,,,
 [Settings],,,,,,,
 AdapterRead1,AGATCGGAAGAGCACACGTCTGAACTCCAGTCA,,,,,,
@@ -59,17 +61,33 @@ OverrideCycles,U7N1Y93;I8;I8;U7N1Y93,,,,,,
 ,,,,,,,
 [Data],,,,,,,,
 Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_ID,index,index2,Sample_Type,Pair_ID
-%s,,,,%s,%s,%s,DNA,%s\n
-    """%(prefix,indexID,index,index2,prefix))
+%s,,,,%s,%s,%s,DNA,%s"""%(prefix,indexID,index,index2,prefix))
     outfile.close()
     #####################change the fastq name################
-    if not os.path.exists("%s/analysis/docker_run.log"%(outdir)):
-        subprocess.check_call("rm -rf %s/analysis/"%(outdir),shell=True)
-        os.makedirs("%s/fastq/"%(outdir))
-        subprocess.check_call("cp %s %s/fastq/%s_S1_L001_R1_001.fastq.gz"%(pe1,outdir,prefix),shell=True)
-        subprocess.check_call("cp %s %s/fastq/%s_S1_L001_R2_001.fastq.gz" % (pe2, outdir, prefix), shell=True)
+    if not os.path.exists("%s/fastq/%s"%(outdir,prefix)):
+        os.makedirs("%s/fastq/%s"%(outdir,prefix))
+    if not os.path.exists("%s/fastq/%s/%s_S1_R1_001.fastq.gz"%(outdir,prefix,prefix)):
+        ###################################使用fastp在fastq序列中添加UMI序列
+        cmd = "cd %s/fastq/%s && %s -i %s -I %s -U --umi_loc per_read --umi_len 7 --umi_skip 1 -o %s.umi.1.fq.gz -O %s.umi.2.fq.gz --length_required 75" \
+              % (outdir,prefix,fastp, pe1, pe2, prefix, prefix)
+        subprocess.check_call(cmd, shell=True)
+        string = {}
+        string[
+            "a"] = "cd %s/fastq/%s && zcat < %s.umi.1.fq.gz|sed s:_:+:g|gzip -c >%s_S1_R1_001.fastq.gz && rm %s.umi.1.fq.gz" \
+                   % (outdir,prefix, prefix,prefix,prefix)
+        string[
+            "b"] = "cd %s/fastq/%s && zcat < %s.umi.2.fq.gz|sed s:_:+:g|gzip -c >%s_S1_R2_001.fastq.gz && rm %s.umi.2.fq.gz" \
+                   % (outdir, prefix,prefix,prefix,prefix)
+        ####################################多线程运行
+        p1 = Process(target=shell_run, args=(string["a"],))
+        p2 = Process(target=shell_run, args=(string["b"],))
+        p1.start()
+        p2.start()
+        p1.join()
+        p2.join()
+    if not os.path.exists("%s/analysis/docker_run.log" % (outdir)):
         cmd = "cd %s && %s --resourcesFolder %s/resources --fastqFolder %s/fastq/ --analysisFolder %s/analysis/ --sampleSheet %s/SampleSheet.csv" % (
-        os.path.dirname(TSO500), TSO500, os.path.dirname(TSO500), outdir, outdir, outdir)
+        os.path.dirname(TSO500), TSO500, os.path.dirname(TSO500), outdir,outdir, outdir)
         subprocess.check_call(cmd, shell=True)
         subprocess.check_call("echo done >%s/analysis/docker_run.log" % (outdir), shell=True)
 

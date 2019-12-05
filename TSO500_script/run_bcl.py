@@ -18,7 +18,7 @@ class Myconf(configparser.ConfigParser):
 def run_docker(analysis,runFolder,SampleSheet,configfile):
      config = Myconf()
      config.read(configfile)
-     TSO500=config.read('software','TSO500')
+     TSO500=config.get('software','TSO500')
      if not os.path.exists("%s/docker_run.log"%(analysis)):
           subprocess.check_call("rm -rf %s"%(analysis),shell=True)
           cmd="cd %s && %s --resourcesFolder %s/resources --runFolder %s --analysisFolder %s --sampleSheet %s"%(os.path.dirname(TSO500),TSO500,os.path.dirname(TSO500),runFolder,analysis,SampleSheet)
