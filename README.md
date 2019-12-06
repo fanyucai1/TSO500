@@ -2,6 +2,15 @@
 
 **FASTQ Generation**
 
+**Workflow**
+[workflow](workflow.png)
+
+**Database**
+[database](database.png)
+
+**TMB**
+[TMB](TMB.png)
+
 **DNA Analysis Methods**
 
     DNA Alignment and Realignment
