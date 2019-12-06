@@ -3,13 +3,13 @@
 **FASTQ Generation**
 
 **Workflow**
-[workflow](workflow.png)
+[workflow](./workflow.png)
 
 **Database**
-[database](database.png)
+[database](./database.png)
 
 **TMB**
-[TMB](TMB.png)
+[TMB](./TMB.png)
 
 **DNA Analysis Methods**
 
