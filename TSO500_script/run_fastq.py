@@ -34,6 +34,8 @@ def run_docker(pe1,pe2,outdir,prefix,indexID,configfile):
             index2=array[6]
     infile.close()
     ##########step1:print samplesheet############
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
     outfile=open("%s/SampleSheet.csv"%(outdir),"w")
     outfile.write("""
 [Header],,,,,,,
