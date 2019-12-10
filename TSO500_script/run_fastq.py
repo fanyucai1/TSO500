@@ -75,10 +75,10 @@ Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_ID,index,index2,Sample_Type
         subprocess.check_call(cmd, shell=True)
         string = {}
         string[
-            "a"] = "cd %s/fastq/%s && zcat < %s.umi.1.fq.gz|sed s:_:+:g|gzip -c >%s_S1_R1_001.fastq.gz && rm %s.umi.1.fq.gz" \
+            "a"] = "cd %s/fastq/%s && zcat < %s.umi.1.fq.gz|sed s:_:+:g|gzip -c >%s_S1_R1_001.fastq.gz && rm %s.umi.1.fq.gz fastp.html fastp.json" \
                    % (outdir,prefix, prefix,prefix,prefix)
         string[
-            "b"] = "cd %s/fastq/%s && zcat < %s.umi.2.fq.gz|sed s:_:+:g|gzip -c >%s_S1_R2_001.fastq.gz && rm %s.umi.2.fq.gz" \
+            "b"] = "cd %s/fastq/%s && zcat < %s.umi.2.fq.gz|sed s:_:+:g|gzip -c >%s_S1_R2_001.fastq.gz && rm %s.umi.2.fq.gz fastp.html fastp.json" \
                    % (outdir, prefix,prefix,prefix,prefix)
         ####################################多线程运行
         p1 = Process(target=shell_run, args=(string["a"],))
