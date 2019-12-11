@@ -1,4 +1,3 @@
-
 import os
 import sys
 sub=os.path.abspath(__file__)
@@ -92,6 +91,7 @@ Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_ID,index,index2,Sample_Type
         os.path.dirname(TSO500), TSO500, os.path.dirname(TSO500), outdir,outdir, outdir)
         subprocess.check_call(cmd, shell=True)
         subprocess.check_call("echo done >%s/analysis/docker_run.log" % (outdir), shell=True)
+        print(cmd)
 
 def run(indir,project_name,configfile):
     config = Myconf()
@@ -141,6 +141,7 @@ if __name__=="__main__":
     parer.add_argument("-n","--name",help="project name",required=True)
     parer.add_argument("-c","--config",help="config file",required=True)
     parer.add_argument("-i","--indexID",help="index id",required=True)
+    parer.add_argument("-t",'--purity',help='tumor purity',default=0)
     args=parer.parse_args()
     run_docker(args.pe1, args.pe2, args.outdir, args.prefix, args.indexID, args.config)
     run("%s/analysis"%(args.outdir), args.name, args.config)

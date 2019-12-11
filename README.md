@@ -11,6 +11,9 @@
 **TMB**
 ![TMB](./TMB.png)
 
+**CNV**
+![CNV拷贝数变异计算公式](./CNV.png)
+
 **DNA Analysis Methods**
 
     DNA Alignment and Realignment
