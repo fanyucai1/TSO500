@@ -25,7 +25,7 @@ def run_docker(analysis,runFolder,SampleSheet,configfile):
           subprocess.check_call(cmd,shell=True)
           subprocess.check_call("echo done >%s/docker_run.log"%(analysis),shell=True)
 
-def run(indir, project_name, configfile):
+def run(indir, project_name, configfile,purity=0):
   config = Myconf()
   config.read(configfile)
   outdir = indir + "/final_result"
@@ -42,7 +42,7 @@ def run(indir, project_name, configfile):
           if tmp.endswith("CopyNumberVariants.vcf"):
               ID.append(sample)
               print(tmp)
-              core.format_CNV.run(tmp, "%s/CNV" % (outdir), sample)
+              core.format_CNV.run(tmp, "%s/CNV" % (outdir), sample,purity)
           elif tmp.endswith("TMB_Trace.tsv"):
               print(tmp)
               gvcf = tmp.replace("TMB_Trace.tsv", "MergedSmallVariants.genome.vcf")
@@ -72,7 +72,7 @@ if __name__=="__main__":
     parer.add_argument("-b","--bcl",help="bcl file",required=True)
     parer.add_argument("-s","--samplesheet",help="SampleSheet",required=True)
     parer.add_argument("-p","--project",help="project name",required=True)
-    parer.add_argument("-t","--type",help="fastq or bcl",required=True,choices=["bcl","fastq"])
+    parer.add_argument("-t", '--purity', help='tumor purity', default=0)
     args=parer.parse_args()
     run_docker(args.analysis, args.bcl, args.samplesheet, args.config)
-    run(args.analysis, args.project, args.config)
+    run(args.analysis, args.project, args.config,args.purity)

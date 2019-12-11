@@ -93,7 +93,7 @@ Sample_ID,Sample_Name,Sample_Plate,Sample_Well,Index_ID,index,index2,Sample_Type
         subprocess.check_call("echo done >%s/analysis/docker_run.log" % (outdir), shell=True)
         print(cmd)
 
-def run(indir,project_name,configfile,turity=0):
+def run(indir,project_name,configfile,purity=0):
     config = Myconf()
     config.read(configfile)
     outdir=indir+"/final_result"
@@ -110,7 +110,7 @@ def run(indir,project_name,configfile,turity=0):
             if tmp.endswith("CopyNumberVariants.vcf"):
                 ID.append(sample)
                 print(tmp)
-                core.format_CNV.run(tmp,"%s/CNV"%(outdir),sample,turity)
+                core.format_CNV.run(tmp,"%s/CNV"%(outdir),sample,purity)
             elif tmp.endswith("TMB_Trace.tsv"):
                 print(tmp)
                 gvcf=tmp.replace("TMB_Trace.tsv","MergedSmallVariants.genome.vcf")
@@ -144,4 +144,4 @@ if __name__=="__main__":
     parer.add_argument("-t",'--purity',help='tumor purity',default=0)
     args=parer.parse_args()
     run_docker(args.pe1, args.pe2, args.outdir, args.prefix, args.indexID, args.config)
-    run("%s/analysis"%(args.outdir), args.name, args.config)
+    run("%s/analysis"%(args.outdir), args.name, args.config,args.purity)
