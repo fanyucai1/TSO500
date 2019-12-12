@@ -40,6 +40,6 @@ if __name__=="__main__":
     parser.add_argument("-v","--vcf",help="vcf file from CNV",required=True)
     parser.add_argument("-o","--outdir",help="output directory",required=True)
     parser.add_argument("-p","--prefix",help="prefix of output",required=True)
-    parser.add_argument("-t","--purity",help="tumor purity",default=0)
+    parser.add_argument("-t","--purity",help="tumor purity",default=0,type=float)
     args=parser.parse_args()
     run(args.vcf,args.outdir,args.prefix,args.purity)
