@@ -8,10 +8,6 @@ import os
 import re
 import subprocess
 
-def _format_addr(s):
-    name, addr = parseaddr(s)
-    return formataddr((Header(name, 'utf-8').encode(), addr))
-
 def run(cnv_vcf,purity,prefix):
     infile=open(cnv_vcf,"r")
     outfile=open("%s.final.CNV.tsv"%(prefix),"w")
@@ -36,31 +32,41 @@ def run(cnv_vcf,purity,prefix):
     mail_host = "smtp.exmail.qq.com"
     sender = "yucaifan@chosenmedtech.com"
     password = "Fyc240290"
-    receivers = ["ycz@chosenmedtech.com",'bmc@chosenmedtech.com']
-    message = MIMEMultipart()
-    message['From'] = formataddr(["From BMC", sender])  # 发送者
-    message['To'] = formataddr(['To Genetic Counseling',",".join(receivers)])  # 接收者
+    receivers = ["fanyucai1@126.com","527614504@qq.com"]
     ####################################################
     if num==0:
         subprocess.check_call("rm -rf %s.final.CNV.tsv"%(prefix),shell=True)
         info="sample %s not find DUP and DEL."%(prefix)
         message = MIMEText(info, 'plain', 'utf-8')
+        message['From'] = formataddr(["From BMC", sender])  # 发送者
+        message['To'] = formataddr(['To Genetic Counseling', ",".join(receivers)])  # 接受者
+        message['Subject'] = Header('TSO500样本%s的CNV分析结果' % (prefix), 'utf-8')
+        ########################################################
+        try:
+            smtpObj = smtplib.SMTP(mail_host, 25)
+            smtpObj.login(sender, password)
+            smtpObj.sendmail(sender, receivers, message.as_string())
+            print("邮件发送成功")
+        except smtplib.SMTPException:
+            print("Error: 无法发送邮件")
     if os.path.exists("%s.final.CNV.tsv"%(prefix)):
+        message = MIMEMultipart()
         message.attach(MIMEText('sample %s find DUP and DEL.'%(prefix), 'plain', 'utf-8'))
+        message['From'] = formataddr(["From BMC", sender])  # 发送者
+        message['To'] = formataddr(['To Genetic Counseling', ",".join(receivers)])  # 接受者
+        message['Subject'] = Header('TSO500样本%s的CNV分析结果' % (prefix), 'utf-8')
         att1 = MIMEText(open('%s.final.CNV.tsv'%(prefix), 'rb').read(), 'base64', 'utf-8')
         att1["Content-Type"] = 'application/octet-stream'
         att1["Content-Disposition"] = 'attachment; filename='+"%s.final.CNV.tsv"%(prefix)
         message.attach(att1)
-    ##########################邮件主题######################
-    message['Subject'] = Header('TSO500样本%s的CNV分析结果'%(prefix), 'utf-8')
-    ########################################################
-    try:
-        smtpObj = smtplib.SMTP(mail_host, 25)
-        smtpObj.login(sender, password)
-        smtpObj.sendmail(sender, receivers, message.as_string())
-        print("邮件发送成功")
-    except smtplib.SMTPException:
-        print("Error: 无法发送邮件")
+        ########################################################
+        try:
+            smtpObj = smtplib.SMTP(mail_host, 25)
+            smtpObj.login(sender, password)
+            smtpObj.sendmail(sender, receivers, message.as_string())
+            print("邮件发送成功")
+        except smtplib.SMTPException:
+            print("Error: 无法发送邮件")
 if __name__=="__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("-cv","--cnv_vcf",help="cnv vcf",required=True)
