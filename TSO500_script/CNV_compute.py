@@ -7,10 +7,12 @@ import os
 import re
 root_dir="/data/TSO500"
 def run(sample_name,purity):
+    result=0
     for (root,dirs,files) in os.walk(root_dir):
         for file in files:
             tmp=os.path.join(root,file)
             if sample_name==tmp.split("/")[-1] and tmp.endswith("%s_CopyNumberVariants.vcf"%(sample_name)):
+                result=1
                 infile=open(tmp,"r")
                 outfile=open("%s.final.CNV.tsv","w")
                 outfile.write("#Chr\tStart\tend\tRef\tType\tGene\tCopyNumber\n")
@@ -27,8 +29,8 @@ def run(sample_name,purity):
                             Y=float(array[-1])
                             n = ((200 * Y) - 2 * (100 - X)) / X
                             outfile.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\n"%(array[0],array[1],end,array[3],array[4],gene,n))
-            else:
-                print("You input sample name erro,please check it")
+    if result==0:
+        print("You input sample name erro,please check it")
 
 
 
