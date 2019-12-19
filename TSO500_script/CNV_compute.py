@@ -32,7 +32,7 @@ def run(cnv_vcf,purity,prefix):
     mail_host = "smtp.exmail.qq.com"
     sender = "yucaifan@chosenmedtech.com"
     password = "Fyc240290"
-    receivers = ["fanyucai1@126.com","527614504@qq.com"]
+    receivers = ["ycz@chosenmedtech.com","bmc@chosenmedtech.com"]
     ####################################################
     if num==0:
         subprocess.check_call("rm -rf %s.final.CNV.tsv"%(prefix),shell=True)
