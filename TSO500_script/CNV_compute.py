@@ -3,7 +3,6 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.utils import parseaddr, formataddr
-from email import encoders
 import argparse
 import os
 import re
