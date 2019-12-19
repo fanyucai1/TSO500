@@ -38,8 +38,8 @@ def run(cnv_vcf,purity,prefix):
         subprocess.check_call("rm -rf %s.final.CNV.tsv"%(prefix),shell=True)
         info="sample %s not find DUP and DEL."%(prefix)
         message = MIMEText(info, 'plain', 'utf-8')
-        message['From'] = formataddr(["From BMC", sender])  # 发送者
-        message['To'] = formataddr(['To Genetic Counseling', ",".join(receivers)])  # 接受者
+        message['From'] = "From BMC" + sender  # 发送者
+        message['To'] = ",".join(receivers)
         message['Subject'] = Header('TSO500样本%s的CNV分析结果' % (prefix), 'utf-8')
         ########################################################
         try:
@@ -52,8 +52,8 @@ def run(cnv_vcf,purity,prefix):
     if os.path.exists("%s.final.CNV.tsv"%(prefix)):
         message = MIMEMultipart()
         message.attach(MIMEText('sample %s find DUP and DEL.'%(prefix), 'plain', 'utf-8'))
-        message['From'] = formataddr(["From BMC", sender])  # 发送者
-        message['To'] = formataddr(['To Genetic Counseling', ",".join(receivers)])  # 接受者
+        message['From'] = "From BMC"+sender  # 发送者
+        message['To'] =",".join(receivers)
         message['Subject'] = Header('TSO500样本%s的CNV分析结果' % (prefix), 'utf-8')
         att1 = MIMEText(open('%s.final.CNV.tsv'%(prefix), 'rb').read(), 'base64', 'utf-8')
         att1["Content-Type"] = 'application/octet-stream'
