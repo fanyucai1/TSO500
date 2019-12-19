@@ -36,10 +36,10 @@ def run(cnv_vcf,purity,prefix):
     mail_host = "smtp.exmail.qq.com"
     sender = "yucaifan@chosenmedtech.com"
     password = "Fyc240290"
-    receivers = "fanyucai1@126.com"
+    receivers = ["ycz@chosenmedtech.com",'bmc@chosenmedtech.com']
     message = MIMEMultipart()
     message['From'] = formataddr(["From BMC", sender])  # 发送者
-    message['To'] = formataddr(['To Genetic Counseling', receivers])  # 接收者
+    message['To'] = formataddr(['To Genetic Counseling',",".join(receivers)])  # 接收者
     ####################################################
     if num==0:
         subprocess.check_call("rm -rf %s.final.CNV.tsv"%(prefix),shell=True)
