@@ -67,6 +67,7 @@ def run(cnv_vcf,purity,prefix):
             print("邮件发送成功")
         except smtplib.SMTPException:
             print("Error: 无法发送邮件")
+        subprocess.check_call("rm -rf %s.final.CNV.tsv"%(prefix),shell=True)
 if __name__=="__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("-cv","--cnv_vcf",help="cnv vcf",required=True)
