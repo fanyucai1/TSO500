@@ -38,23 +38,21 @@ def run(cnv_vcf,purity,prefix):
     password = "Fyc240290"
     receivers = "fanyucai1@126.com"
     message = MIMEMultipart()
+    message['From'] = formataddr(["From BMC", sender])  # 发送者
+    message['To'] = formataddr(['To Genetic Counseling', receivers])  # 接收者
+    ####################################################
     if num==0:
         subprocess.check_call("rm -rf %s.final.CNV.tsv"%(prefix),shell=True)
         info="sample %s not find DUP and DEL."%(prefix)
         message = MIMEText(info, 'plain', 'utf-8')
-    else:
-        if os.path.exists("%s.final.CNV.tsv"%(prefix)):
-            info = "sample %s find DUP and DEL." % (prefix)
-            message = MIMEText(info, 'plain', 'utf-8')
-            att1 = MIMEText(open('%s.final.CNV.tsv'%(prefix), 'rb').read(), 'base64', 'utf-8')
-            att1["Content-Type"] = 'application/octet-stream'
-            att1["Content-Disposition"] = 'attachment; filename="test.txt"'
-            message.attach(att1)
-    message['From'] = formataddr(["From BMC", sender])  # 发送者
-    message['To'] = formataddr(['To Genetic Counseling',receivers])  # 接收者
+    if os.path.exists("%s.final.CNV.tsv"%(prefix)):
+        message.attach(MIMEText('sample %s find DUP and DEL.'%(prefix), 'plain', 'utf-8'))
+        att1 = MIMEText(open('%s.final.CNV.tsv'%(prefix), 'rb').read(), 'base64', 'utf-8')
+        att1["Content-Type"] = 'application/octet-stream'
+        att1["Content-Disposition"] = 'attachment; filename='+"%s.final.CNV.tsv"%(prefix)
+        message.attach(att1)
     ##########################邮件主题######################
-    subject = 'TSO500样本%s的CNV分析结果' % (prefix)
-    message['Subject'] = Header(subject, 'utf-8')
+    message['Subject'] = Header('TSO500样本%s的CNV分析结果'%(prefix), 'utf-8')
     ########################################################
     try:
         smtpObj = smtplib.SMTP(mail_host, 25)
