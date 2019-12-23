@@ -39,11 +39,7 @@ def run(indir, project_name, configfile,purity=0):
       for file in files:
           tmp = os.path.join(root, file)
           sample = tmp.split("/")[-2]
-          if tmp.endswith("CopyNumberVariants.vcf"):
-              ID.append(sample)
-              print(tmp)
-              core.format_CNV.run(tmp, "%s/CNV" % (outdir), sample,purity)
-          elif tmp.endswith("TMB_Trace.tsv"):
+          if tmp.endswith("TMB_Trace.tsv"):
               print(tmp)
               gvcf = tmp.replace("TMB_Trace.tsv", "MergedSmallVariants.genome.vcf")
               core.format_SNV_indel.run(tmp, gvcf, "%s/SNV_indel" % (outdir), sample)
