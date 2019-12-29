@@ -27,7 +27,7 @@ def run_docker(analysis,runFolder,SampleSheet,configfile):
 def run(indir, project_name, configfile):
   config = Myconf()
   config.read(configfile)
-  outdir = indir + "/final_result"
+  outdir = indir + "/final_result_RNA"
   if not os.path.exists(outdir):
       os.makedirs(outdir)
   for (root, dirs, files) in os.walk(indir):
@@ -35,8 +35,8 @@ def run(indir, project_name, configfile):
           tmp = os.path.join(root, file)
           if tmp.endswith("_CombinedVariantOutput.tsv") or tmp.split("/")[-1] == "MetricsOutput.tsv":
               subprocess.check_call("cp %s -rf %s" % (tmp, outdir), shell=True)
-  subprocess.check_call("cd %s && tar -zcvf final_result.tar.gz final_result/" % (indir), shell=True)
-  core.copy_file.run(project_name, "%s/final_result.tar.gz" % (indir))
+  subprocess.check_call("cd %s && tar -zcvf final_result_RNA.tar.gz final_result_RNA/" % (indir), shell=True)
+  core.copy_file.run(project_name, "%s/final_result_RNA.tar.gz" % (indir))
 
 if __name__=="__main__":
     parer=argparse.ArgumentParser()
