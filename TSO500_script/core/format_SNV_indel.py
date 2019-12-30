@@ -44,6 +44,7 @@ def run(TMB,gvcf,outdir,prefix,configfile):
             tmp = array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + array[3]
             if result == 4 or tmp in backlist:
                 dict[tmp] = 1
+
     infile.close()
     infile = open(gvcf, "r")
     for line in infile:
