@@ -1,10 +1,24 @@
 import os
-import argparse
+import argparse,configparser
+class Myconf(configparser.ConfigParser):
+    def __init__(self, defaults=None):
+        configparser.ConfigParser.__init__(self, defaults=defaults)
+    def optionxform(self, optionstr):
+        return optionstr
 
-def run(TMB,gvcf,outdir,prefix):
+def run(TMB,gvcf,outdir,prefix,configfile):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     out=outdir+"/"+prefix
+    config = Myconf()
+    config.read(configfile)
+    hotspot=open(config.get('database','hotspot'),"r")
+    backlist={}
+    for line in hotspot:
+        line=line.strip()
+        array=line.split("\t")
+        backlist[array[0]+"\t"+array[1]+"\t"+array[2]+"\t"+array[3]]=1
+    hotspot.close()
     infile=open(TMB,"r")
     outfile=open("%s.vcf"%(out),"w")
     outfile.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
@@ -27,8 +41,8 @@ def run(TMB,gvcf,outdir,prefix):
                     result += 1
                 if name[i] == "GermlineFilterProxi" and array[i] == "False":
                     result += 1
-            if result == 4:
-                tmp = array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + array[3]
+            tmp = array[0] + "\t" + array[1] + "\t" + array[2] + "\t" + array[3]
+            if result == 4 or tmp in backlist:
                 dict[tmp] = 1
     infile.close()
     infile = open(gvcf, "r")
@@ -50,5 +64,6 @@ if __name__=="__main__":
     parser.add_argument("-g", "--gvcf", help="gvcf file", required=True)
     parser.add_argument("-o", "--outdir", help="output directory", required=True)
     parser.add_argument("-p", "--prefix", help="prefix of output", required=True)
+    parser.add_argument("-c","--config",help="config file",default="/home/fanyucai/config/config.ini")
     args = parser.parse_args()
-    run(args.tmb,args.gvcf,args.outdir,args.prefix)
+    run(args.tmb,args.gvcf,args.outdir,args.prefix,args.config)
