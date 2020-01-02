@@ -42,7 +42,7 @@ def run(indir, project_name, configfile,purity=0):
           if tmp.endswith("TMB_Trace.tsv"):
               print(tmp)
               gvcf = tmp.replace("TMB_Trace.tsv", "MergedSmallVariants.genome.vcf")
-              core.format_SNV_indel.run(tmp, gvcf, "%s/SNV_indel" % (outdir), sample)
+              core.format_SNV_indel.run(tmp, gvcf, "%s/SNV_indel" % (outdir), sample,configfile)
               core.anno_vcf.run("%s/SNV_indel/%s.vcf" % (outdir, sample), "%s/SNV_indel" % (outdir), sample,
                                 configfile)
               subprocess.check_call("rm -rf %s/SNV_indel/%s.vcf" % (outdir, sample), shell=True)
@@ -64,7 +64,7 @@ def run(indir, project_name, configfile,purity=0):
 if __name__=="__main__":
     parer=argparse.ArgumentParser()
     parer.add_argument("-a","--analysis",help="analysis directory",required=True)
-    parer.add_argument("-c","--config",help="config file",required=True)
+    parer.add_argument("-c","--config",help="config file",default="/home/fanyucai/config/config.ini")
     parer.add_argument("-b","--bcl",help="bcl file",required=True)
     parer.add_argument("-s","--samplesheet",help="SampleSheet",required=True)
     parer.add_argument("-p","--project",help="project name",required=True)
