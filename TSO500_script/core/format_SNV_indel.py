@@ -1,5 +1,6 @@
 import os
 import argparse,configparser
+import re
 class Myconf(configparser.ConfigParser):
     def __init__(self, defaults=None):
         configparser.ConfigParser.__init__(self, defaults=defaults)
@@ -17,7 +18,8 @@ def run(TMB,gvcf,outdir,prefix,configfile):
     for line in hotspot:
         line=line.strip()
         array=line.split("\t")
-        backlist[array[0]+"\t"+array[1]+"\t"+array[2]+"\t"+array[3]]=1
+        if not re.search('germline', line) and not re.search('Germline', line):
+            backlist[array[0]+"\t"+array[1]+"\t"+array[2]+"\t"+array[3]]=1
     hotspot.close()
     infile=open(TMB,"r")
     outfile=open("%s.vcf"%(out),"w")
